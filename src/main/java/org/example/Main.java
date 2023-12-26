@@ -24,7 +24,8 @@ public class Main {
             System.out.println("2. List keepers");
             System.out.println("3. Change keeper properties");
             System.out.println("4. Execute 'keep' method");
-            System.out.println("5. Exit");
+            System.out.println("5. Delete a keeper");
+            System.out.println("6. Save and exit");
 
             int choice = getIntInput("Enter your choice: ");
 
@@ -42,9 +43,11 @@ public class Main {
                     executeKeepMethod();
                     break;
                 case 5:
+                    deleteKeeper();
+                    break;
+                case 6:
                     saveKeepersToJsonFile();
                     System.out.println("Exiting...");
-                    scanner.close();
                     System.exit(0);
                     break;
                 default:
@@ -183,25 +186,6 @@ public class Main {
         return Enum.valueOf(enumClass, scanner.next());
     }
 
-    private static void loadKeepersFromTxtFile() {
-        try (BufferedReader reader = new BufferedReader(new FileReader(DATA_FILE))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split("\\|");
-                if (parts.length == 2) {
-                    String pathsLine = parts[0];
-                    String settingsLine = parts[1];
-
-                    Keeper keeper = createKeeperFromLines(pathsLine, settingsLine);
-                    if (keeper != null) {
-                        keepers.put(keeper.getPath(), keeper);
-                    }
-                }
-            }
-        } catch (IOException | IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-    }
 
     private static Keeper createKeeperFromLines(String pathsLine, String settingsLine) {
         Keeper keeper = null;
@@ -250,6 +234,33 @@ public class Main {
 
         }catch (IOException e){
             System.err.println("No history found");
+        }
+    }
+
+    private static void deleteKeeper() {
+        System.out.println("\n=== Delete Keeper ===");
+
+        if (keepers.isEmpty()) {
+            System.out.println("No keepers available.");
+            return;
+        }
+
+        // List available keepers
+        System.out.println("Available Keepers:");
+        int index = 1;
+        for (String path : keepers.keySet()) {
+            System.out.println(index + ". " + path);
+            index++;
+        }
+
+        // Choose a keeper to delete
+        int choice = getIntInput("Enter the number of the keeper to delete: ");
+        if (choice >= 1 && choice <= keepers.size()) {
+            String chosenPath = getKeeperPathByIndex(choice);
+            keepers.remove(chosenPath);
+            System.out.println("Keeper deleted successfully.");
+        } else {
+            System.out.println("Invalid choice. Please enter a valid number.");
         }
     }
 
