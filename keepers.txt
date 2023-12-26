@@ -1,0 +1,1 @@
+D:\Saved\almafa\1.txt|D:\Saved\almafa\2.txt|D:\Saved\almafa\3.txt|D:\Saved\almafa\4.txt|D:\Saved\almafa\5.txt|KEEP_LAST|BY_CREATION_DATE|2

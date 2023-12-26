@@ -1,5 +1,11 @@
-package org.example;
+package main.java.org.example;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
+import java.io.*;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -7,8 +13,11 @@ import java.util.Scanner;
 public class Main {
     private static Map<String, Keeper> keepers = new HashMap<>();
     private static Scanner scanner = new Scanner(System.in);
+    private static final String DATA_FILE = "keepers.txt";
 
     public static void main(String[] args) {
+        loadKeepersFromTxtFile();
+
         while (true) {
             System.out.println("\n=== File Keeper CLI ===");
             System.out.println("1. Create a new keeper");
@@ -33,6 +42,7 @@ public class Main {
                     executeKeepMethod();
                     break;
                 case 5:
+                    saveKeepersToTxtFile();
                     System.out.println("Exiting...");
                     scanner.close();
                     System.exit(0);
@@ -42,6 +52,8 @@ public class Main {
             }
         }
     }
+
+
 
     private static void createNewKeeper() {
         System.out.println("\n=== Create New Keeper ===");
@@ -169,6 +181,58 @@ public class Main {
     private static <T extends Enum<T>> T getEnumInput(String prompt, Class<T> enumClass) {
         System.out.print(prompt);
         return Enum.valueOf(enumClass, scanner.next());
+    }
+
+    private static void loadKeepersFromTxtFile() {
+        try (BufferedReader reader = new BufferedReader(new FileReader(DATA_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split("\\|");
+                if (parts.length == 2) {
+                    String pathsLine = parts[0];
+                    String settingsLine = parts[1];
+
+                    Keeper keeper = createKeeperFromLines(pathsLine, settingsLine);
+                    if (keeper != null) {
+                        keepers.put(keeper.getPath(), keeper);
+                    }
+                }
+            }
+        } catch (IOException | IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static Keeper createKeeperFromLines(String pathsLine, String settingsLine) {
+        Keeper keeper = null;
+        try {
+            String[] filePaths = pathsLine.split("\\|");
+            int keptFiles = Integer.parseInt(settingsLine.split("\\|")[2]);
+
+            if (filePaths.length > 0) {
+                keeper = new Keeper(filePaths[0], keptFiles);
+                for (int i = 1; i < filePaths.length; i++) {
+                    keeper.getFiles().add(new File(filePaths[i]));
+                }
+                keeper.setMode(Keeper.Mode.valueOf(settingsLine.split("\\|")[0]));
+                keeper.setSort(Keeper.Sort.valueOf(settingsLine.split("\\|")[1]));
+            }
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+        return keeper;
+    }
+
+    private static void saveKeepersToTxtFile() {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(DATA_FILE))) {
+            for (Keeper keeper : keepers.values()) {
+                String pathsLine = String.join("|", keeper.getFilesPaths());
+                String settingsLine = keeper.getMode() + "|" + keeper.getSort() + "|" + keeper.getKeptFiles();
+                writer.println(pathsLine + "|" + settingsLine);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
