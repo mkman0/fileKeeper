@@ -13,10 +13,10 @@ import java.util.Scanner;
 public class Main {
     private static Map<String, Keeper> keepers = new HashMap<>();
     private static Scanner scanner = new Scanner(System.in);
-    private static final String DATA_FILE = "keepers.txt";
+    private static final String DATA_FILE = "keepers.json";
 
     public static void main(String[] args) {
-        loadKeepersFromTxtFile();
+        loadKeepersFromJsonFile();
 
         while (true) {
             System.out.println("\n=== File Keeper CLI ===");
@@ -42,7 +42,7 @@ public class Main {
                     executeKeepMethod();
                     break;
                 case 5:
-                    saveKeepersToTxtFile();
+                    saveKeepersToJsonFile();
                     System.out.println("Exiting...");
                     scanner.close();
                     System.exit(0);
@@ -223,15 +223,33 @@ public class Main {
         return keeper;
     }
 
-    private static void saveKeepersToTxtFile() {
-        try (PrintWriter writer = new PrintWriter(new FileWriter(DATA_FILE))) {
-            for (Keeper keeper : keepers.values()) {
-                String pathsLine = String.join("|", keeper.getFilesPaths());
-                String settingsLine = keeper.getMode() + "|" + keeper.getSort() + "|" + keeper.getKeptFiles();
-                writer.println(pathsLine + "|" + settingsLine);
-            }
+
+    private static void saveKeepersToJsonFile(){
+        try(FileWriter writer = new FileWriter(DATA_FILE)) {
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            gsonBuilder.registerTypeAdapter(Keeper.class, new KeeperSerializer());
+            Gson customGson = gsonBuilder.setPrettyPrinting().create();
+            String custsomJson = customGson.toJson(keepers);
+            writer.write(custsomJson);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void loadKeepersFromJsonFile(){
+        GsonBuilder gsonBuilder = new GsonBuilder().registerTypeAdapter(Map.class, new KeeperMapDeserializer());
+        gsonBuilder.registerTypeAdapter(Keeper.class , new KeeperDeserializer());
+        Gson gson = gsonBuilder.create();
+        Type type = new TypeToken<Map<String,Keeper>>(){}.getType();
+
+        try(Reader reader = new FileReader(DATA_FILE)){
+            Map<String,Keeper> ks = gson.fromJson(reader,type);
+            if(ks != null){
+                keepers = ks;
+            }
+
+        }catch (IOException e){
+            System.err.println("No history found");
         }
     }
 

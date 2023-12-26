@@ -62,6 +62,21 @@ public class Keeper {
         files.addAll(Arrays.asList(folder.listFiles()));
     }
 
+    Keeper(String path, int keptFiles, Mode mode, Sort sort){
+        this.path = path;
+        this.keptFiles = keptFiles;
+        this.mode = mode;
+        this.sort = sort;
+
+        File folder = new File(path);
+        if(!folder.exists() || !folder.isDirectory()){
+            throw new InvalidPathException(path, "Path is not a directory");
+        }
+
+        files = new ArrayList<File>();
+        files.addAll(Arrays.asList(folder.listFiles()));
+    }
+
     public void setMode(Mode mode) {
         this.mode = mode;
     }

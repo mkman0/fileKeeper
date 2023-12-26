@@ -1,0 +1,14 @@
+{
+  "C:\\Egytem-local\\Adatb\\lab05": {
+    "path": "C:\\Egytem-local\\Adatb\\lab05",
+    "keptFiles": 1,
+    "mode": "KEEP_LAST",
+    "sort": "BY_CREATION_DATE"
+  },
+  "C:\\Egytem-local\\SzofTech": {
+    "path": "C:\\Egytem-local\\SzofTech",
+    "keptFiles": 100,
+    "mode": "KEEP_LAST",
+    "sort": "BY_NAME"
+  }
+}
