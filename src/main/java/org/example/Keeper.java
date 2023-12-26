@@ -1,9 +1,10 @@
-package org.example;
+package main.java.org.example;
 
 import java.io.File;
 import java.nio.file.InvalidPathException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class Keeper {
 
@@ -14,6 +15,22 @@ public class Keeper {
 
     public Sort getSort() {
         return sort;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public ArrayList<File> getFiles() {
+        return files;
+    }
+
+    public void setFiles(ArrayList<File> files) {
+        this.files = files;
     }
 
     enum Sort{
@@ -103,6 +120,14 @@ public class Keeper {
                 System.out.println(files.get(i).getName() + " " + files.get(i).lastModified());
                 files.get(i).delete();
         }
+    }
+
+    public List<String> getFilesPaths() {
+        List<String> paths = new ArrayList<>();
+        for (File file : files) {
+            paths.add(file.getAbsolutePath());
+        }
+        return paths;
     }
 
 }

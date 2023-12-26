@@ -1,6 +1,16 @@
 plugins {
     id 'java'
+    id 'application'
 }
+
+sourceSets {
+    main{
+        java {
+            srcDirs = ['src']
+        }
+    }
+}
+
 
 group = 'org.example'
 version = '1.0-SNAPSHOT'
@@ -12,8 +22,19 @@ repositories {
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.7'
+
 }
 
 test {
     useJUnitPlatform()
+}
+
+
+application {
+    mainClassName = 'main.java.org.example.Main'
+}
+
+run {
+    standardInput = System.in
 }
