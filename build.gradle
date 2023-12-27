@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
 }
 
 sourceSets {
@@ -43,4 +44,8 @@ jar {
     manifest {
         attributes 'Main-Class': 'main.java.org.example.Main'
     }
+}
+
+shadowJar {
+    mergeServiceFiles()
 }
